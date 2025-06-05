@@ -1,3 +1,4 @@
+
 const students =
 [
   {
@@ -631,7 +632,9 @@ const students =
     "favorite": null
   }
 ];
+
 const idMap = new Map(students.map(s => [s.id, s]));
+
 function findBestClass(classes, groupSize, maxSize) {
   const sorted = classes
     .map((cls, idx) => ({ idx, size: cls.length }))
@@ -647,6 +650,7 @@ function findBestClass(classes, groupSize, maxSize) {
 function distributeStudents(students, numClasses) {
   const classes = Array.from({ length: numClasses }, () => []);
   const assigned = new Set();
+
   const minSize = Math.floor(students.length / numClasses);
   const maxSize = minSize + 2;
 
@@ -655,7 +659,9 @@ function distributeStudents(students, numClasses) {
     if (!assigned.has(student.id) && student.favorite) {
       const fav = idMap.get(student.favorite);
       if (fav && fav.favorite === student.id && !assigned.has(fav.id)) {
+
         const idx = findBestClass(classes, 2, maxSize);
+
         classes[idx].push(student, fav);
         assigned.add(student.id);
         assigned.add(fav.id);
@@ -667,6 +673,7 @@ function distributeStudents(students, numClasses) {
   for (const student of students) {
     if (!assigned.has(student.id) && student.favorite) {
       const favClassIndex = classes.findIndex(c => c.some(s => s.id === student.favorite));
+
       if (favClassIndex !== -1 && classes[favClassIndex].length + 1 <= maxSize) {
         classes[favClassIndex].push(student);
         assigned.add(student.id);
@@ -674,6 +681,7 @@ function distributeStudents(students, numClasses) {
         const idx = findBestClass(classes, 1, maxSize);
         classes[idx].push(student);
         assigned.add(student.id);
+
       }
     }
   }
@@ -682,6 +690,7 @@ function distributeStudents(students, numClasses) {
   for (const student of students) {
     if (!assigned.has(student.id)) {
       const idx = findBestClass(classes, 1, maxSize);
+
       classes[idx].push(student);
       assigned.add(student.id);
     }
@@ -702,10 +711,12 @@ function displayClasses(classes) {
     const list = document.createElement('ul');
     cls.forEach(s => {
       const li = document.createElement('li');
+
       const fav = s.favorite ? idMap.get(s.favorite) : null;
       const favName = fav ? `${fav.firstName} ${fav.lastName}` : 'none';
       if (fav) {
         const sameClass = cls.some(st => st.id === fav.id);
+
         const isMutual = fav.favorite === s.id;
         if (sameClass) {
           li.className = isMutual ? 'favorite-met' : 'favorite-one-sided';
@@ -714,6 +725,7 @@ function displayClasses(classes) {
         }
       }
       li.textContent = `${s.firstName} ${s.lastName} - Favorite: ${favName}`;
+
       list.appendChild(li);
     });
     div.appendChild(list);
