@@ -1,3 +1,4 @@
+
 const students =
 [
   {
@@ -631,7 +632,9 @@ const students =
     "favorite": null
   }
 ];
+
 const idMap = new Map(students.map(s => [s.id, s]));
+
 function findLeastPopulatedClass(classes) {
   let minIdx = 0;
   for (let i = 1; i < classes.length; i++) {
@@ -694,6 +697,7 @@ function displayClasses(classes) {
     const list = document.createElement('ul');
     cls.forEach(s => {
       const li = document.createElement('li');
+
       const fav = s.favorite ? idMap.get(s.favorite) : null;
       const favName = fav ? `${fav.firstName} ${fav.lastName}` : 'none';
       if (fav) {
@@ -701,6 +705,7 @@ function displayClasses(classes) {
         li.className = sameClass ? 'favorite-met' : 'favorite-missed';
       }
       li.textContent = `${s.firstName} ${s.lastName} - Favorite: ${favName}`;
+
       list.appendChild(li);
     });
     div.appendChild(list);
