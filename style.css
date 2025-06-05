@@ -27,3 +27,11 @@ body {
     border-bottom: 1px solid #ccc;
     padding-bottom: 4px;
 }
+
+.favorite-met {
+    color: green;
+}
+
+.favorite-missed {
+    color: red;
+}
