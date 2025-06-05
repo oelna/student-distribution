@@ -35,3 +35,7 @@ body {
 .favorite-missed {
     color: red;
 }
+
+.favorite-one-sided {
+    color: blue;
+}

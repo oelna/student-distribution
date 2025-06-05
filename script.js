@@ -635,26 +635,33 @@ const students =
 
 const idMap = new Map(students.map(s => [s.id, s]));
 
-function findLeastPopulatedClass(classes) {
-  let minIdx = 0;
-  for (let i = 1; i < classes.length; i++) {
-    if (classes[i].length < classes[minIdx].length) {
-      minIdx = i;
+function findBestClass(classes, groupSize, maxSize) {
+  const sorted = classes
+    .map((cls, idx) => ({ idx, size: cls.length }))
+    .sort((a, b) => a.size - b.size);
+  for (const c of sorted) {
+    if (classes[c.idx].length + groupSize <= maxSize) {
+      return c.idx;
     }
   }
-  return minIdx;
+  return sorted[0].idx;
 }
 
 function distributeStudents(students, numClasses) {
   const classes = Array.from({ length: numClasses }, () => []);
   const assigned = new Set();
 
+  const minSize = Math.floor(students.length / numClasses);
+  const maxSize = minSize + 2;
+
   // Place mutual favorites first
   for (const student of students) {
     if (!assigned.has(student.id) && student.favorite) {
       const fav = idMap.get(student.favorite);
       if (fav && fav.favorite === student.id && !assigned.has(fav.id)) {
-        const idx = findLeastPopulatedClass(classes);
+
+        const idx = findBestClass(classes, 2, maxSize);
+
         classes[idx].push(student, fav);
         assigned.add(student.id);
         assigned.add(fav.id);
@@ -666,9 +673,15 @@ function distributeStudents(students, numClasses) {
   for (const student of students) {
     if (!assigned.has(student.id) && student.favorite) {
       const favClassIndex = classes.findIndex(c => c.some(s => s.id === student.favorite));
-      if (favClassIndex !== -1) {
+
+      if (favClassIndex !== -1 && classes[favClassIndex].length + 1 <= maxSize) {
         classes[favClassIndex].push(student);
         assigned.add(student.id);
+      } else {
+        const idx = findBestClass(classes, 1, maxSize);
+        classes[idx].push(student);
+        assigned.add(student.id);
+
       }
     }
   }
@@ -676,7 +689,8 @@ function distributeStudents(students, numClasses) {
   // Distribute remaining students evenly
   for (const student of students) {
     if (!assigned.has(student.id)) {
-      const idx = findLeastPopulatedClass(classes);
+      const idx = findBestClass(classes, 1, maxSize);
+
       classes[idx].push(student);
       assigned.add(student.id);
     }
@@ -702,7 +716,13 @@ function displayClasses(classes) {
       const favName = fav ? `${fav.firstName} ${fav.lastName}` : 'none';
       if (fav) {
         const sameClass = cls.some(st => st.id === fav.id);
-        li.className = sameClass ? 'favorite-met' : 'favorite-missed';
+
+        const isMutual = fav.favorite === s.id;
+        if (sameClass) {
+          li.className = isMutual ? 'favorite-met' : 'favorite-one-sided';
+        } else {
+          li.className = 'favorite-missed';
+        }
       }
       li.textContent = `${s.firstName} ${s.lastName} - Favorite: ${favName}`;
 
